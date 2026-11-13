@@ -8,13 +8,25 @@ DroidClean is an Android device diagnostics and safe-cleanup project.
 - Device model and Android version
 - Available and total RAM snapshot
 - Available storage snapshot for the app's storage volume
-- No automatic deletion and no intrusive permissions
+- In-app update screen
+- Checks the latest GitHub Release for a newer semantic version
+- Downloads an APK with Android DownloadManager
+- Starts Android's package installer only after the user taps Install
 
-## Build
+## Publishing an update
 
-The GitHub Actions workflow builds a debug APK on every push to `main` and on manual dispatch.
+1. Increase `versionCode` and `versionName` in `app/build.gradle.kts`.
+2. Build the APK with the same persistent signing key used for the previous release.
+3. Create a GitHub Release with a tag such as `v0.3.0`.
+4. Attach the APK to that release. Its filename must end in `.apk`.
+5. The app checks:
+   `https://api.github.com/repos/Postmen1971/DroidClean/releases/latest`
 
-The APK is published as the workflow artifact **DroidClean-debug-apk**.
+## Important signing requirement
+
+Android only installs an update over an existing app when both APKs are signed with the same signing certificate. The current CI debug build uses the runner's debug key and is not suitable for repeatable in-place updates across separate GitHub Actions runs. Before distributing updates, configure a persistent release signing key through GitHub Actions Secrets. Never commit the keystore or its passwords to this public repository.
+
+The updater only downloads APKs attached to the official repository's GitHub Releases. Android still asks the user to confirm installation. On Android 8+, the user may need to allow DroidClean to install unknown apps in system settings.
 
 ## Compatibility
 
@@ -22,6 +34,6 @@ The APK is published as the workflow artifact **DroidClean-debug-apk**.
 - Compile SDK: 35
 - Java: 17
 
-## Important limitations
+## Limitations
 
-Android restricts what ordinary applications can clean or terminate. DroidClean will use public Android APIs and explicit user consent. It will not claim to clear other apps' private caches or boost performance where Android does not allow it.
+Android restricts what ordinary applications can clean or terminate. DroidClean uses public Android APIs and explicit user consent. It does not claim to clear other apps' private caches or boost performance where Android does not allow it.
