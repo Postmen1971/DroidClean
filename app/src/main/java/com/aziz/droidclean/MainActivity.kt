@@ -1,6 +1,7 @@
 package com.aziz.droidclean
 
 import android.app.ActivityManager
+import android.content.Intent
 import android.os.Bundle
 import android.os.StatFs
 import androidx.activity.ComponentActivity
@@ -27,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
@@ -91,6 +93,7 @@ private fun DroidCleanDashboard(
     memory: MemoryStatus,
     storage: StorageStatus
 ) {
+    val context = LocalContext.current
     val modules = listOf(
         "Speicheranalyse" to "Freien Gerätespeicher anzeigen",
         "RAM-Monitor" to "Arbeitsspeicher prüfen",
@@ -135,6 +138,11 @@ private fun DroidCleanDashboard(
                 )
             }
         }
+
+        androidx.compose.material3.Button(
+            onClick = { context.startActivity(Intent(context, UpdateActivity::class.java)) },
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("App-Updates") }
 
         Text("Werkzeuge", style = MaterialTheme.typography.titleLarge)
         LazyVerticalGrid(
